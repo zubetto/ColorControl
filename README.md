@@ -7,4 +7,5 @@ The _ColorControlPanel_ is derived from the _UserControl_.
 - _ColorControlPanel.SetInitialColor_(_Color_ color) sets the initial color to which you can return by clicking the corresponding rectangle  
   
 Included lightweight test project represents template of usage of the _ColorControlPanel_.  
+  
 ![alt text](screen.png "screen")
