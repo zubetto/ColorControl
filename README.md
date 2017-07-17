@@ -1,5 +1,5 @@
 # ColorControl
-The color picker panel, implemented as the WPF UserControl (includes test project)  
+The color picker panel, implemented as the WPF UserControl. 
 The _ColorControlPanel_ is derived from the _UserControl_.  
   
 - _ColorControlPanel.CurrentColor_ gets the picked color  
