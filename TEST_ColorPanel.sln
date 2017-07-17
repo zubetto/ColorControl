@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEST_ColorPanel", "TEST_Col
 		{C8692DBA-5E7B-40FA-964A-2DDEED2D0763} = {C8692DBA-5E7B-40FA-964A-2DDEED2D0763}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorTools", "..\ColorTools\ColorTools\ColorTools.csproj", "{C8692DBA-5E7B-40FA-964A-2DDEED2D0763}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorTools", "ColorTools\ColorTools.csproj", "{C8692DBA-5E7B-40FA-964A-2DDEED2D0763}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
