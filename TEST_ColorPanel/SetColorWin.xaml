@@ -1,0 +1,13 @@
+﻿<Window x:Name="SetColor" x:Class="TEST_ColorPanel.SetColorWin"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TEST_ColorPanel"
+        xmlns:ct="clr-namespace:ColorTools;assembly=ColorTools"
+        mc:Ignorable="d"
+        Title="Set color" Height="220" Width="435" Background="#FF1F1F1F" WindowStartupLocation="Manual" Top="360" Left="1033" WindowStyle="SingleBorderWindow" ResizeMode="NoResize">
+    <Grid>
+        <ct:ColorControlPanel x:Name="ccpSetBox" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+    </Grid>
+</Window>

@@ -1,0 +1,50 @@
+﻿<Window x:Class="TEST_ColorPanel.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TEST_ColorPanel"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525" WindowStartupLocation="CenterScreen">
+    <Grid Background="#FF1F1F1F">
+        <StackPanel>
+            <Button x:Name="button0" Content="Change my color" HorizontalAlignment="Center" Margin="0,10,0,0" Width="200" Height="33" FontFamily="Trajan Pro" VerticalContentAlignment="Center" FontSize="16" Padding="1,3,1,1"
+                    Click="button0_Click" Foreground="#FF010000" BorderBrush="#FF707070">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFF3F3F3" Offset="0"/>
+                        <GradientStop Color="#FFEBEBEB" Offset="0.5"/>
+                        <GradientStop Color="#FFDDDDDD" Offset="0.5"/>
+                        <GradientStop Color="#FFCDCDCD" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+            <Button x:Name="button1" Content="And my color" Style="{DynamicResource SimpleButton}" Margin="0,10,0,0" Width="200" Height="33" FontFamily="Trajan Pro" FontSize="16"
+                    Click="button1_Click" Foreground="Black">
+                <Button.BorderBrush>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFCCCCCC" Offset="0"/>
+                        <GradientStop Color="#FF444444" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.BorderBrush>
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFEEEEEE" Offset="0"/>
+                        <GradientStop Color="#FFCBCBCB" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+            <Button x:Name="button2" Content="And my" Style="{DynamicResource SimpleButton}" Margin="159.3,10,159.3,0" Width="200" Height="33" FontFamily="Trajan Pro" FontSize="16" Background="#FFCBCBCB"
+                    Click="button2_Click" Foreground="Black">
+                <Button.BorderBrush>
+                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFCCCCCC" Offset="0"/>
+                        <GradientStop Color="#FF444444" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.BorderBrush>
+            </Button>
+        </StackPanel>
+
+    </Grid>
+</Window>
+
