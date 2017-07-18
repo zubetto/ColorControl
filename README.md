@@ -1,10 +1,10 @@
 # ColorControl
-The color picker panel, implemented as the WPF UserControl. 
-The _ColorControlPanel_ is derived from the _UserControl_.  
+The _ColorControlPanel_ class represents the color picker panel and it is derived from the WPF _UserControl_ class. 
+The following three public members of the _ColorControlPanel_ are mainly in use:  
   
-- _ColorControlPanel.CurrentColor_ gets the picked color  
-- _ColorControlPanel.ColorChanged_ event occurs when the picked color is changed  
-- _ColorControlPanel.SetInitialColor_(_Color_ color) sets the initial color to which you can return by clicking the corresponding rectangle  
+- _CurrentColor_ gets the picked color  
+- _ColorChanged_ event occurs when the picked color is changed  
+- _SetInitialColor_(_Color_ color) sets the initial color to which you can return by clicking the corresponding rectangle  
   
 Included lightweight test project represents template of usage of the _ColorControlPanel_.  
   
