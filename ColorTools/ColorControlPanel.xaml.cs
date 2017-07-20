@@ -499,7 +499,10 @@ namespace ColorTools
         private void MLBdownOverSVsquare(object sender, MouseButtonEventArgs e)
         {
             SaturationGradient.MouseLeftButtonDown -= MLBdownOverSVsquare;
+            SaturationGradient.MouseLeftButtonUp += MLBupSVsquare;
+
             SaturationGradient.MouseMove += SVthumbMove;
+
             SaturationGradient.CaptureMouse();
 
             SVthumbMove(e.GetPosition(SaturationGradient));
@@ -508,8 +511,11 @@ namespace ColorTools
         private void MLBupSVsquare(object sender, MouseButtonEventArgs e)
         {
             SaturationGradient.ReleaseMouseCapture();
+
             SaturationGradient.MouseMove -= SVthumbMove;
+
             SaturationGradient.MouseLeftButtonDown += MLBdownOverSVsquare;
+            SaturationGradient.MouseLeftButtonUp -= MLBupSVsquare;
         }
 
         private void SVthumbMove(Point point)
@@ -688,7 +694,6 @@ namespace ColorTools
 
             // Subscribe on events
             SaturationGradient.MouseLeftButtonDown += MLBdownOverSVsquare;
-            SaturationGradient.MouseLeftButtonUp += MLBupSVsquare;
 
             sliderSpectrum.ValueChanged += HueThumbMove;
             sliderRed.ValueChanged += RedThumbMove;
