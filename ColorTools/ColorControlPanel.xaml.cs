@@ -695,8 +695,12 @@ namespace ColorTools
             // Subscribe on events
             SaturationGradient.MouseLeftButtonDown += MLBdownOverSVsquare;
 
-            sliderSpectrum.ValueChanged += HueThumbMove;
-            sliderRed.ValueChanged += RedThumbMove;
+            // The following handlers are added in the SwithHandlers method
+            //sliderSpectrum.ValueChanged += HueThumbMove;
+            //sliderRed.ValueChanged += RedThumbMove;
+            //sliderGreen.ValueChanged += GreenThumbMove;
+            //sliderBlue.ValueChanged += BlueThumbMove;
+            //sliderAlpha.ValueChanged += AlphaThumbMove;
 
             RGBAdock.LostKeyboardFocus += LostKeyFocus_RGBApanel;
             RGBAdock.KeyDown += KeyDown_RGBApanel;
