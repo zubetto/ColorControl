@@ -8,6 +8,6 @@
         mc:Ignorable="d"
         Title="Set color" Height="220" Width="435" Background="#FF1F1F1F" WindowStartupLocation="Manual" Top="360" Left="1033" WindowStyle="SingleBorderWindow" ResizeMode="NoResize">
     <Grid>
-        <ct:ColorControlPanel x:Name="ccpSetBox" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <ct:ColorControlPanel x:Name="ccpSetBox" VerticalAlignment="Center" HorizontalAlignment="Center" TextBoxBackground="#FF2C2D2F"/>
     </Grid>
 </Window>

@@ -23,6 +23,8 @@ namespace ColorTools
     /// </summary>
     public partial class ColorControlPanel : UserControl
     {
+        private bool IsInitialised = false;
+
         private Color iniColor = Colors.Black;
         private Color tmpColor = Colors.Black;
         private Color outColor = Colors.Black;
@@ -93,7 +95,9 @@ namespace ColorTools
             // Output color
             thumbSV.Fill = thumbSVbrush;
 
-            if (setIniFlag) AdjustThumbs(iniColor);
+            IsInitialised = true;
+
+            if (hasIniColor) AdjustThumbs(iniColor);
             else SetInitialColor(Color.FromRgb(0, 0, 0));
         }
 
@@ -310,7 +314,7 @@ namespace ColorTools
         
         private void AdjustThumbs(Color theColor)
         {
-            SwithHandlers(false);
+            SwitchHandlers(false);
 
             // --- ARGB ---
             byte A = theColor.A;
@@ -399,12 +403,12 @@ namespace ColorTools
                 tmpColor = outColor;
             } 
 
-            SwithHandlers(true);
+            SwitchHandlers(true);
         }
 
         private void AdjustThumbs(double H, double S, double V)
         {
-            SwithHandlers(false);
+            SwitchHandlers(false);
 
             // --- HSV ---
             thumbHColor = ConvertHsvToRgb(H, 1, 1);
@@ -493,7 +497,7 @@ namespace ColorTools
                 tmpColor = outColor;
             }
 
-            SwithHandlers(true);
+            SwitchHandlers(true);
         }
 
         private void MLBdownOverSVsquare(object sender, MouseButtonEventArgs e)
@@ -622,7 +626,7 @@ namespace ColorTools
             AdjustThumbs(outColor);
         }
 
-        private void SwithHandlers(bool ON)
+        private void SwitchHandlers(bool ON)
         {
             if (ON)
             {
@@ -642,7 +646,7 @@ namespace ColorTools
             }
         }
 
-        private bool setIniFlag = false;
+        private bool hasIniColor = false;
         public void SetInitialColor(Color incolor)
         {
             iniColor = incolor;
@@ -655,14 +659,19 @@ namespace ColorTools
             rectInitialColor.Background = iniColorBrush;
             rectSelectedColor.Background = outColorBrush;
 
-            if (IsLoaded)
+            if (IsInitialised)
             {
                 AdjustThumbs(iniColor);
             }
             else
             {
-                setIniFlag = true;
+                hasIniColor = true;
             }  
+        }
+
+        public void SetCurrentColor(Color newColor)
+        {
+            AdjustThumbs(newColor);
         }
 
         public class ColorChangedEventArgs : EventArgs
@@ -695,7 +704,7 @@ namespace ColorTools
             // Subscribe on events
             SaturationGradient.MouseLeftButtonDown += MLBdownOverSVsquare;
 
-            // The following handlers are added in the SwithHandlers method
+            // The following handlers are added in the SwitchHandlers method
             //sliderSpectrum.ValueChanged += HueThumbMove;
             //sliderRed.ValueChanged += RedThumbMove;
             //sliderGreen.ValueChanged += GreenThumbMove;
@@ -707,5 +716,28 @@ namespace ColorTools
 
             rectInitialColor.MouseLeftButtonDown += RevertIniColor;
         }
+
+        // --------- Dependency Properties ---------
+        public static readonly DependencyProperty TextBoxBackgroundProperty = DependencyProperty.Register("TextBoxBackground", typeof(Brush), typeof(ColorControlPanel),
+                                                            new FrameworkPropertyMetadata(new SolidColorBrush(Color.FromRgb(85, 85, 85)), 
+                                                                                          FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public Brush TextBoxBackground
+        {
+            get { return (Brush)GetValue(TextBoxBackgroundProperty); }
+            set { SetValue(TextBoxBackgroundProperty, value); }
+        } // Brush TextBoxBackground ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        public static readonly DependencyProperty TextForegroundProperty = DependencyProperty.Register("TextForeground", typeof(Brush), typeof(ColorControlPanel),
+                                                            new FrameworkPropertyMetadata(new SolidColorBrush(Color.FromRgb(185, 185, 185)),
+                                                                                          FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public Brush TextForeground
+        {
+            get { return (Brush)GetValue(TextForegroundProperty); }
+            set { SetValue(TextForegroundProperty, value); }
+        } // Brush TextForeground ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 }
