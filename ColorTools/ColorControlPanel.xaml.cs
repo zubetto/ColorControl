@@ -25,12 +25,16 @@ namespace ColorTools
     {
         private bool IsInitialised = false;
 
+        private enum Sliders { A, R, G, B, H, SV, nil }
+        private Sliders DrivingSlider = Sliders.nil;
+
         private Color iniColor = Colors.Black;
         private Color tmpColor = Colors.Black;
         private Color outColor = Colors.Black;
         public Color SelectedColor { get { return outColor; } }
 
         private double outColorH, outColorS, outColorV;
+        private bool useHSV = false;
 
         private Color thumbRColor = Color.FromRgb(0, 0, 0);
         private Color thumbGColor = Color.FromRgb(0, 0, 0);
@@ -95,10 +99,9 @@ namespace ColorTools
             // Output color
             thumbSV.Fill = thumbSVbrush;
 
-            IsInitialised = true;
+            AdjustThumbs(SelectedColorBrush.Color);
 
-            if (hasIniColor) AdjustThumbs(iniColor);
-            else SetInitialColor(Color.FromRgb(0, 0, 0));
+            IsInitialised = true;
         }
 
         // Algorithm taken from Wikipedia https://en.wikipedia.org/wiki/HSL_and_HSV
@@ -263,40 +266,40 @@ namespace ColorTools
                     if (byte.TryParse(input, out numeric) && outColor.A != numeric)
                     {
                         outColor.A = numeric;
-                        AdjustThumbs(outColor);
+                        outColorBrush.Color = outColor;
                     }
+                    else txtAvalue.Text = outColor.A.ToString();
 
-                    txtAvalue.Text = outColor.A.ToString();
                     break;
 
                 case "txtRvalue":
                     if (byte.TryParse(input, out numeric) && outColor.R != numeric)
                     {
                         outColor.R = numeric;
-                        AdjustThumbs(outColor);
+                        outColorBrush.Color = outColor;
                     }
+                    else txtRvalue.Text = outColor.R.ToString();
 
-                    txtRvalue.Text = outColor.R.ToString();
                     break;
 
                 case "txtGvalue":
                     if (byte.TryParse(input, out numeric) && outColor.G != numeric)
                     {
                         outColor.G = numeric;
-                        AdjustThumbs(outColor);
+                        outColorBrush.Color = outColor;
                     }
+                    else txtGvalue.Text = outColor.G.ToString();
 
-                    txtGvalue.Text = outColor.G.ToString();
                     break;
 
                 case "txtBvalue":
                     if (byte.TryParse(input, out numeric) && outColor.B != numeric)
                     {
                         outColor.B = numeric;
-                        AdjustThumbs(outColor);
+                        outColorBrush.Color = outColor;
                     }
+                    else txtBvalue.Text = outColor.B.ToString();
 
-                    txtBvalue.Text = outColor.B.ToString();
                     break;
 
                 case "txtColorCode":
@@ -304,7 +307,7 @@ namespace ColorTools
 
                     if (ColorCodeParser(input, out buffColor) && outColor != buffColor)
                     {
-                        AdjustThumbs(buffColor);
+                        outColorBrush.Color = buffColor;
                     }
                     else txtColorCode.Text = outColor.ToString();
 
@@ -314,8 +317,6 @@ namespace ColorTools
         
         private void AdjustThumbs(Color theColor)
         {
-            SwitchHandlers(false);
-
             // --- ARGB ---
             byte A = theColor.A;
             byte R = theColor.R;
@@ -323,11 +324,10 @@ namespace ColorTools
             byte B = theColor.B;
 
             outColor = theColor;
-            outColorBrush.Color = theColor;
             txtColorCode.Text = string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", A, R, G, B);
 
             // Alpha
-            sliderAlpha.Value = A;
+            if (DrivingSlider != Sliders.A) sliderAlpha.Value = A;
             txtAvalue.Text = A.ToString();
 
             theColor.A = 0;
@@ -337,7 +337,7 @@ namespace ColorTools
             //theColor.A = A; the alpha will be setted after the SV thumb adjusting
 
             // Red
-            sliderRed.Value = R;
+            if (DrivingSlider != Sliders.R) sliderRed.Value = R;
             txtRvalue.Text = R.ToString();
 
             theColor.R = 0;
@@ -350,7 +350,7 @@ namespace ColorTools
             thumbRbrush.Color = thumbRColor;
 
             // Green
-            sliderGreen.Value = G;
+            if (DrivingSlider != Sliders.G) sliderGreen.Value = G;
             txtGvalue.Text = G.ToString();
 
             theColor.G = 0;
@@ -363,7 +363,7 @@ namespace ColorTools
             thumbGbrush.Color = thumbGColor;
 
             // Blue
-            sliderBlue.Value = B;
+            if (DrivingSlider != Sliders.B) sliderBlue.Value = B;
             txtBvalue.Text = B.ToString();
 
             theColor.B = 0;
@@ -382,7 +382,7 @@ namespace ColorTools
 
             // Hue
             thumbHbrush.Color = thumbHColor;
-            sliderSpectrum.Value = outColorH;
+            if (DrivingSlider != Sliders.H) sliderSpectrum.Value = outColorH;
 
             // SV thumb
             outColor.A = 255;
@@ -395,37 +395,36 @@ namespace ColorTools
             // Saturation and value to canvas coords
             Canvas.SetLeft(thumbSV, outColorS * SaturationGradient.ActualWidth - 0.5 * thumbSV.ActualWidth);
             Canvas.SetTop(thumbSV, (1 - outColorV) * SaturationGradient.ActualHeight - 0.5 * thumbSV.ActualHeight);
-
+            
             // RISE EVENT
             if (tmpColor != outColor)
             {
                 ColorChanged?.Invoke(this, new ColorChangedEventArgs(iniColor, tmpColor, outColor));
                 tmpColor = outColor;
-            } 
-
-            SwitchHandlers(true);
+            }
         }
 
         private void AdjustThumbs(double H, double S, double V)
         {
-            SwitchHandlers(false);
-
             // --- HSV ---
             thumbHColor = ConvertHsvToRgb(H, 1, 1);
 
             // Hue
             thumbHbrush.Color = thumbHColor;
-            sliderSpectrum.Value = H;
+            if (DrivingSlider != Sliders.H) sliderSpectrum.Value = H;
 
             // Saturation gradient
             SaturationGradBrush.GradientStops[1].Color = thumbHColor;
 
             // Saturation and value to canvas coords
-            Canvas.SetLeft(thumbSV, S * SaturationGradient.ActualWidth - 0.5 * thumbSV.ActualWidth);
-            Canvas.SetTop(thumbSV, (1 - V) * SaturationGradient.ActualHeight - 0.5 * thumbSV.ActualHeight);
+            if (DrivingSlider != Sliders.SV)
+            {
+                Canvas.SetLeft(thumbSV, S * SaturationGradient.ActualWidth - 0.5 * thumbSV.ActualWidth);
+                Canvas.SetTop(thumbSV, (1 - V) * SaturationGradient.ActualHeight - 0.5 * thumbSV.ActualHeight);
+            }
             
             byte A = outColor.A;
-            outColor = ConvertHsvToRgb(H, S, V);
+            //outColor = ConvertHsvToRgb(H, S, V);
 
             // SV thumb
             thumbSVbrush.Color = outColor;
@@ -435,8 +434,7 @@ namespace ColorTools
             byte R = outColor.R;
             byte G = outColor.G;
             byte B = outColor.B;
-
-            outColorBrush.Color = outColor;
+            
             txtColorCode.Text = string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", A, R, G, B);
 
             // Alpha
@@ -496,24 +494,95 @@ namespace ColorTools
                 ColorChanged?.Invoke(this, new ColorChangedEventArgs(iniColor, tmpColor, outColor));
                 tmpColor = outColor;
             }
+        }
 
-            SwitchHandlers(true);
+        private void preMLBdown_addSliderHandler(object sender, MouseButtonEventArgs e)
+        {
+            Slider sourceSlider = e.Source as Slider;
+
+            if (sourceSlider != null && DrivingSlider == Sliders.nil)
+            {
+                switch(sourceSlider.Name)
+                {
+                    case "sliderAlpha":
+                        sliderAlpha.ValueChanged += AlphaThumbMove;
+                        DrivingSlider = Sliders.A;
+                        break;
+
+                    case "sliderRed":
+                        sliderRed.ValueChanged += RedThumbMove;
+                        DrivingSlider = Sliders.R;
+                        break;
+
+                    case "sliderGreen":
+                        sliderGreen.ValueChanged += GreenThumbMove;
+                        DrivingSlider = Sliders.G;
+                        break;
+
+                    case "sliderBlue":
+                        sliderBlue.ValueChanged += BlueThumbMove;
+                        DrivingSlider = Sliders.B;
+                        break;
+
+                    case "sliderSpectrum":
+                        sliderSpectrum.ValueChanged += HueThumbMove;
+                        DrivingSlider = Sliders.H;
+                        break;
+                }
+            }
+        }
+
+        private void LostMouseCapture_removeSliderHandler(object sender, MouseEventArgs e)
+        {
+            Slider sourceSlider = e.Source as Slider;
+
+            if (sourceSlider != null)
+            {
+                switch (DrivingSlider)
+                {
+                    case Sliders.A:
+                        sliderAlpha.ValueChanged -= AlphaThumbMove;
+                        break;
+
+                    case Sliders.R:
+                        sliderRed.ValueChanged -= RedThumbMove;
+                        break;
+
+                    case Sliders.G:
+                        sliderGreen.ValueChanged -= GreenThumbMove;
+                        break;
+
+                    case Sliders.B:
+                        sliderBlue.ValueChanged -= BlueThumbMove;
+                        break;
+
+                    case Sliders.H:
+                        sliderSpectrum.ValueChanged -= HueThumbMove;
+                        break;
+                }
+
+                DrivingSlider = Sliders.nil;
+            }
         }
 
         private void MLBdownOverSVsquare(object sender, MouseButtonEventArgs e)
         {
+            DrivingSlider = Sliders.SV;
+
+            SVthumbMove(e.GetPosition(SaturationGradient));
+
             SaturationGradient.MouseLeftButtonDown -= MLBdownOverSVsquare;
             SaturationGradient.MouseLeftButtonUp += MLBupSVsquare;
 
             SaturationGradient.MouseMove += SVthumbMove;
 
             SaturationGradient.CaptureMouse();
-
-            SVthumbMove(e.GetPosition(SaturationGradient));
         }
 
         private void MLBupSVsquare(object sender, MouseButtonEventArgs e)
         {
+            DrivingSlider = Sliders.nil;
+
             SaturationGradient.ReleaseMouseCapture();
 
             SaturationGradient.MouseMove -= SVthumbMove;
@@ -527,15 +596,27 @@ namespace ColorTools
             double X = point.X;
             double Y = point.Y;
 
-            if (X < 0) outColorS = 0;
-            else if (X > SaturationGradient.ActualWidth) outColorS = 1;
-            else outColorS = (float)(X / SaturationGradient.ActualWidth);
+            if (X < 0) X = 0;
+            else if (X > SaturationGradient.ActualWidth) X = SaturationGradient.ActualWidth;
 
-            if (Y < 0) outColorV = 1;
-            else if (Y > SaturationGradient.ActualHeight) outColorV = 0;
-            else outColorV = (float)(1 - Y / SaturationGradient.ActualHeight);
+            if (Y < 0) Y = 0;
+            else if (Y > SaturationGradient.ActualHeight) Y = SaturationGradient.ActualHeight;
 
-            AdjustThumbs(outColorH, outColorS, outColorV);
+            outColorS = (float)(X / SaturationGradient.ActualWidth);
+            outColorV = (float)(1 - Y / SaturationGradient.ActualHeight);
+
+            Canvas.SetLeft(thumbSV, X - 0.5 * thumbSV.ActualWidth);
+            Canvas.SetTop(thumbSV, Y - 0.5 * thumbSV.ActualHeight);
+
+            byte alpha = outColor.A;
+            outColor = ConvertHsvToRgb(outColorH, outColorS, outColorV);
+            outColor.A = alpha;
+
+            if (outColorBrush.Color != outColor) // HSV values may change while RGB values remain the same
+            {
+                useHSV = true;
+                outColorBrush.Color = outColor;
+            }
         }
 
         private void SVthumbMove(object sender, MouseEventArgs e)
@@ -544,55 +625,67 @@ namespace ColorTools
             double X = point.X;
             double Y = point.Y;
 
-            if (X < 0) outColorS = 0;
-            else if (X > SaturationGradient.ActualWidth) outColorS = 1;
-            else outColorS = (float)(X / SaturationGradient.ActualWidth);
+            if (X < 0) X = 0;
+            else if (X > SaturationGradient.ActualWidth) X = SaturationGradient.ActualWidth;
 
-            if (Y < 0) outColorV = 1;
-            else if (Y > SaturationGradient.ActualHeight) outColorV = 0;
-            else outColorV = (float)(1 - Y / SaturationGradient.ActualHeight);
+            if (Y < 0) Y = 0;
+            else if (Y > SaturationGradient.ActualHeight) Y = SaturationGradient.ActualHeight;
 
-            AdjustThumbs(outColorH, outColorS, outColorV);
+            outColorS = (float)(X / SaturationGradient.ActualWidth);
+            outColorV = (float)(1 - Y / SaturationGradient.ActualHeight);
+
+            Canvas.SetLeft(thumbSV, X - 0.5 * thumbSV.ActualWidth);
+            Canvas.SetTop(thumbSV, Y - 0.5 * thumbSV.ActualHeight);
+
+            byte alpha = outColor.A;
+            outColor = ConvertHsvToRgb(outColorH, outColorS, outColorV);
+            outColor.A = alpha;
+
+            if (outColorBrush.Color != outColor) // HSV values may change while RGB values remain the same
+            {
+                useHSV = true;
+                outColorBrush.Color = outColor;
+            }
         }
 
         private void HueThumbMove(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             outColorH = (float)e.NewValue;
-            AdjustThumbs(outColorH, outColorS, outColorV);
+
+            byte alpha = outColor.A;
+            outColor = ConvertHsvToRgb(outColorH, outColorS, outColorV);
+            outColor.A = alpha;
+
+            if (outColorBrush.Color != outColor) // HSV values may change while RGB values remain the same
+            {
+                useHSV = true;
+                outColorBrush.Color = outColor;
+            }
+            else AdjustThumbs(outColorH, outColorS, outColorV);
         }
 
         private void RedThumbMove(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             outColor.R = (byte)e.NewValue;
-            AdjustThumbs(outColor);
+            outColorBrush.Color = outColor;
         }
 
         private void GreenThumbMove(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             outColor.G = (byte)e.NewValue;
-            AdjustThumbs(outColor);
+            outColorBrush.Color = outColor;
         }
 
         private void BlueThumbMove(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             outColor.B = (byte)e.NewValue;
-            AdjustThumbs(outColor);
+            outColorBrush.Color = outColor;
         }
 
         private void AlphaThumbMove(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             outColor.A = (byte)e.NewValue;
-
             outColorBrush.Color = outColor;
-            txtAvalue.Text = outColor.A.ToString();
-            txtColorCode.Text = string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", outColor.A, outColor.R, outColor.G, outColor.B);
-
-            // RISE EVENT
-            if (tmpColor != outColor)
-            {
-                ColorChanged?.Invoke(this, new ColorChangedEventArgs(iniColor, tmpColor, outColor));
-                tmpColor = outColor;
-            }
         }
 
         private void LostKeyFocus_RGBApanel(object sender, RoutedEventArgs e)
@@ -623,57 +716,9 @@ namespace ColorTools
         private void RevertIniColor(object sender, MouseEventArgs e)
         {
             outColor = iniColor;
-            AdjustThumbs(outColor);
+            outColorBrush.Color = outColor;
         }
-
-        private void SwitchHandlers(bool ON)
-        {
-            if (ON)
-            {
-                sliderSpectrum.ValueChanged += HueThumbMove;
-                sliderRed.ValueChanged += RedThumbMove;
-                sliderGreen.ValueChanged += GreenThumbMove;
-                sliderBlue.ValueChanged += BlueThumbMove;
-                sliderAlpha.ValueChanged += AlphaThumbMove;
-            }
-            else // OFF
-            {
-                sliderSpectrum.ValueChanged -= HueThumbMove;
-                sliderRed.ValueChanged -= RedThumbMove;
-                sliderGreen.ValueChanged -= GreenThumbMove;
-                sliderBlue.ValueChanged -= BlueThumbMove;
-                sliderAlpha.ValueChanged -= AlphaThumbMove;
-            }
-        }
-
-        private bool hasIniColor = false;
-        public void SetInitialColor(Color incolor)
-        {
-            iniColor = incolor;
-            tmpColor = incolor;
-            outColor = incolor;
-
-            iniColorBrush.Color = iniColor;
-            outColorBrush.Color = iniColor;
-
-            rectInitialColor.Background = iniColorBrush;
-            rectSelectedColor.Background = outColorBrush;
-
-            if (IsInitialised)
-            {
-                AdjustThumbs(iniColor);
-            }
-            else
-            {
-                hasIniColor = true;
-            }  
-        }
-
-        public void SetCurrentColor(Color newColor)
-        {
-            AdjustThumbs(newColor);
-        }
-
+        
         public class ColorChangedEventArgs : EventArgs
         {
             private Color iniColor;
@@ -698,18 +743,17 @@ namespace ColorTools
         {
             InitializeComponent();
             IniGradientBrushes();
+            
+            rectInitialColor.Background = iniColorBrush;
+            rectSelectedColor.Background = outColorBrush;
 
             Loaded += IniThumbsBrushes;
 
             // Subscribe on events
             SaturationGradient.MouseLeftButtonDown += MLBdownOverSVsquare;
 
-            // The following handlers are added in the SwitchHandlers method
-            //sliderSpectrum.ValueChanged += HueThumbMove;
-            //sliderRed.ValueChanged += RedThumbMove;
-            //sliderGreen.ValueChanged += GreenThumbMove;
-            //sliderBlue.ValueChanged += BlueThumbMove;
-            //sliderAlpha.ValueChanged += AlphaThumbMove;
+            RootGrid.PreviewMouseLeftButtonDown += preMLBdown_addSliderHandler;
+            RootGrid.LostMouseCapture += LostMouseCapture_removeSliderHandler;
 
             RGBAdock.LostKeyboardFocus += LostKeyFocus_RGBApanel;
             RGBAdock.KeyDown += KeyDown_RGBApanel;
@@ -719,7 +763,7 @@ namespace ColorTools
 
         // --------- Dependency Properties ---------
         public static readonly DependencyProperty TextBoxBackgroundProperty = DependencyProperty.Register("TextBoxBackground", typeof(Brush), typeof(ColorControlPanel),
-                                                            new FrameworkPropertyMetadata(new SolidColorBrush(Color.FromRgb(85, 85, 85)), 
+                                                            new FrameworkPropertyMetadata(new SolidColorBrush(Color.FromRgb(33, 33, 33)), 
                                                                                           FrameworkPropertyMetadataOptions.AffectsRender));
 
         public Brush TextBoxBackground
@@ -727,6 +771,18 @@ namespace ColorTools
             get { return (Brush)GetValue(TextBoxBackgroundProperty); }
             set { SetValue(TextBoxBackgroundProperty, value); }
         } // Brush TextBoxBackground ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        public static readonly DependencyProperty TextBoxBorderProperty = DependencyProperty.Register("TextBoxBorder", typeof(Brush), typeof(ColorControlPanel),
+                                                            new FrameworkPropertyMetadata(new SolidColorBrush(Color.FromRgb(85, 85, 85)),
+                                                                                          FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public Brush TextBoxBorder
+        {
+            get { return (Brush)GetValue(TextBoxBorderProperty); }
+            set { SetValue(TextBoxBorderProperty, value); }
+        } // Brush TextBoxBorder ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -739,5 +795,62 @@ namespace ColorTools
             get { return (Brush)GetValue(TextForegroundProperty); }
             set { SetValue(TextForegroundProperty, value); }
         } // Brush TextForeground ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        public static readonly DependencyProperty InitialColorBrushProperty = DependencyProperty.Register("InitialColorBrush", typeof(SolidColorBrush), typeof(ColorControlPanel),
+                                                            new FrameworkPropertyMetadata(new SolidColorBrush(Color.FromRgb(85, 85, 85)), 
+                                                                                          new PropertyChangedCallback(IniColorChanged)));
+
+        public SolidColorBrush InitialColorBrush
+        {
+            get { return (SolidColorBrush)GetValue(InitialColorBrushProperty); }
+            set { SetValue(InitialColorBrushProperty, value); }
+        }
+
+        private static void IniColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ColorControlPanel ccp = (ColorControlPanel)d;
+
+            ccp.iniColor = (e.NewValue as SolidColorBrush).Color;
+            ccp.iniColorBrush.Color = ccp.iniColor;
+        }
+
+        // SolidColorBrush InitialColor ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        public static readonly DependencyProperty SelectedColorBrushProperty = DependencyProperty.Register("SelectedColorBrush", typeof(SolidColorBrush), typeof(ColorControlPanel),
+                                                            new FrameworkPropertyMetadata(new SolidColorBrush(Color.FromRgb(85, 85, 85)),
+                                                                                          new PropertyChangedCallback(SelectedColorChanged)));
+
+        public SolidColorBrush SelectedColorBrush
+        {
+            get { return (SolidColorBrush)GetValue(SelectedColorBrushProperty); }
+            set { SetValue(SelectedColorBrushProperty, value); }
+        }
+
+        private static void SelectedColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ColorControlPanel ccp = (ColorControlPanel)d;
+
+            if (ccp.outColorBrush != e.NewValue as SolidColorBrush)
+            {
+                ccp.outColorBrush = e.NewValue as SolidColorBrush;
+                ccp.rectSelectedColor.Background = ccp.outColorBrush;
+            }
+            
+            if (ccp.IsInitialised)
+            {
+                if (ccp.useHSV)
+                {
+                    ccp.useHSV = false;
+                    ccp.AdjustThumbs(ccp.outColorH, ccp.outColorS, ccp.outColorV);
+                }
+                else ccp.AdjustThumbs(ccp.outColorBrush.Color);
+            } 
+        }
+
+        // SolidColorBrush InitialColor ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
 }

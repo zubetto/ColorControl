@@ -25,6 +25,8 @@ namespace TEST_ColorPanel
 
         private ColorControlPanel colorPanel;
         private SetColorWin ccpWindow = new SetColorWin();
+        private SolidColorBrush tmpBrush = new SolidColorBrush();
+        private SolidColorBrush tmpBrush2 = new SolidColorBrush();
 
         private int BttIndex = 0;
 
@@ -42,9 +44,10 @@ namespace TEST_ColorPanel
         {
             ccpWindow = new SetColorWin();
             colorPanel = ccpWindow.ColorControls;
-            colorPanel.ColorChanged += buttons_ColorChanged;
-
+            
             ccpWindow.Show();
+
+            colorPanel.ColorChanged += buttons_ColorChanged;
         }
 
         private void button0_Click(object sender, RoutedEventArgs e)
@@ -52,7 +55,10 @@ namespace TEST_ColorPanel
             if (ccpWindow == null || !ccpWindow.IsVisible) openColorControls();
 
             BttIndex = 0;
-            colorPanel.SetInitialColor(ButtonsColors[0]);
+            tmpBrush.Color = ButtonsColors[0];
+            tmpBrush2.Color = ButtonsColors[0];
+            colorPanel.InitialColorBrush = tmpBrush;
+            colorPanel.SelectedColorBrush = tmpBrush2;
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)
@@ -60,7 +66,10 @@ namespace TEST_ColorPanel
             if (ccpWindow == null || !ccpWindow.IsVisible) openColorControls();
 
             BttIndex = 1;
-            colorPanel.SetInitialColor(ButtonsColors[1]);
+            tmpBrush.Color = ButtonsColors[1];
+            tmpBrush2.Color = ButtonsColors[1];
+            colorPanel.InitialColorBrush = tmpBrush;
+            colorPanel.SelectedColorBrush = tmpBrush2;
         }
 
         private void button2_Click(object sender, RoutedEventArgs e)
@@ -68,7 +77,10 @@ namespace TEST_ColorPanel
             if (ccpWindow == null || !ccpWindow.IsVisible) openColorControls();
 
             BttIndex = 2;
-            colorPanel.SetInitialColor(ButtonsColors[2]);
+            tmpBrush.Color = ButtonsColors[2];
+            tmpBrush2.Color = ButtonsColors[2];
+            colorPanel.InitialColorBrush = tmpBrush;
+            colorPanel.SelectedColorBrush = tmpBrush2;
         }
         
         private void updateBttColor()

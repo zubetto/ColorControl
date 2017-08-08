@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:TEST_ColorPanel"
         xmlns:ct="clr-namespace:ColorTools;assembly=ColorTools"
         mc:Ignorable="d"
-        Title="Set color" Height="220" Width="435" Background="#FF1F1F1F" WindowStartupLocation="Manual" Top="360" Left="1033" WindowStyle="SingleBorderWindow" ResizeMode="NoResize">
+        Title="Set color" Height="220" Width="435" Background="#FF181818" WindowStartupLocation="Manual" Top="360" Left="1033" WindowStyle="SingleBorderWindow" ResizeMode="NoResize">
     <Grid>
-        <ct:ColorControlPanel x:Name="ccpSetBox" VerticalAlignment="Center" HorizontalAlignment="Center" TextBoxBackground="#FF2C2D2F"/>
+        <ct:ColorControlPanel x:Name="ccpSetBox" VerticalAlignment="Center" HorizontalAlignment="Center" InitialColorBrush="#FF742C2C" SelectedColorBrush="#FF521010" TextBoxBorder="#FF5F5F5F" TextForeground="#FFDADADA"/>
     </Grid>
 </Window>

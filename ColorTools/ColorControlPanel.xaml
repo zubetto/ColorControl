@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ColorTools.ColorControlPanel"
+﻿<UserControl x:Name="userControl" x:Class="ColorTools.ColorControlPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,15 +9,326 @@
 
     <!-- ******* RESOURCES ******* -->
     <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ColorControlResources.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        <!-- *** BRUSHES *** -->
+        <!-- SPECTRUM GRAD -->
+        <LinearGradientBrush x:Key="SpectrumVerticalGradient" x:Name="HueVerticalGrad" EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Red"/>
+            <GradientStop Color="Red" Offset="1"/>
+            <GradientStop Color="#FEFFFF00" Offset="0.1667"/>
+            <GradientStop Color="#FE00FF00" Offset="0.3333"/>
+            <GradientStop Color="#FE00FFFF" Offset="0.5"/>
+            <GradientStop Color="#FE0000FF" Offset="0.6667"/>
+            <GradientStop Color="#FEFF00FF" Offset="0.8333"/>
+        </LinearGradientBrush>
+
+        <LinearGradientBrush x:Key="SpectrumHorizontalGradient" EndPoint="1,0.5" StartPoint="0,0.5">
+            <GradientStop Color="Red"/>
+            <GradientStop Color="Red" Offset="1"/>
+            <GradientStop Color="#FEFFFF00" Offset="0.1667"/>
+            <GradientStop Color="#FE00FF00" Offset="0.3333"/>
+            <GradientStop Color="#FE00FFFF" Offset="0.5"/>
+            <GradientStop Color="#FE0000FF" Offset="0.6667"/>
+            <GradientStop Color="#FEFF00FF" Offset="0.8333"/>
+        </LinearGradientBrush>
+
+        <SolidColorBrush x:Key="TextBoxBorderBrush" Color="{Binding TextBoxBorder, ElementName=userControl}"/>
+
+        <!-- Checker background -->
+        <DrawingBrush x:Key="CheckerBackground" Stretch="Fill" TileMode="Tile" Viewport="12,12,20,20" ViewportUnits="Absolute">
+
+            <!-- a drawing of 4 checkerboard tiles -->
+            <DrawingBrush.Drawing>
+                <DrawingGroup>
+
+                    <!-- checkerboard background -->
+                    <GeometryDrawing Brush="White">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry Rect="0,0,20,20" />
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+
+                    <!-- two checkerboard foreground tiles -->
+                    <GeometryDrawing Brush="LightGray">
+                        <GeometryDrawing.Geometry>
+                            <GeometryGroup>
+                                <RectangleGeometry Rect="0,0,10,10" />
+                                <RectangleGeometry Rect="10,10,10,10" />
+                            </GeometryGroup>
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+
+                </DrawingGroup>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
+
+        <!-- Simple ScrollRepeatButton Style - This RepeatButton is used above and below the Thumb in the Scrollbar. They are set to transparent si that they do not show over the scrollbar -->
+        <Style x:Key="ScrollRepeatButtonStyle" TargetType="{x:Type RepeatButton}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="IsTabStop" Value="false"/>
+            <Setter Property="Focusable" Value="false"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                        <Grid>
+                            <Rectangle Fill="{TemplateBinding Background}" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="{TemplateBinding BorderThickness}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Color Slider Thumb - The Thumb is the draggable part of a Slider -->
+        <Style x:Key="ColorSliderThumb" TargetType="{x:Type Thumb}">
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="Height" Value="14"/>
+            <Setter Property="Width" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Grid>
+                            <Ellipse x:Name="Ellipse" Fill="{TemplateBinding Foreground}" Stroke="Black" StrokeThickness="1"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Spectrum Slider Thumb - The Thumb is the draggable part of a Slider -->
+        <Style x:Key="SpectrumSliderThumb" TargetType="{x:Type Thumb}">
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Grid>
+                            <Rectangle x:Name="Ellipse" Fill="{TemplateBinding Foreground}" Stroke="Black" StrokeThickness="1"
+                                       Width="10" Height="{TemplateBinding Width}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Spectrum Slider -->
+        <Style x:Key="SliderHueComponent" TargetType="{x:Type Slider}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Slider}">
+                        <Grid x:Name="GridRoot">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- TickBar shows the ticks for Slider -->
+                            <TickBar Visibility="Collapsed" x:Name="TopTick" Height="4" SnapsToDevicePixels="True" Placement="Top" Fill="{x:Null}" Grid.ColumnSpan="3" Margin="0,0,0,10" Grid.RowSpan="2"/>
+
+                            <Border Grid.Row="1" Margin="0" x:Name="Border" Height="25" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="0" Grid.ColumnSpan="3"/>
+
+                            <Track x:Name="PART_Track" Grid.Row="1">
+                                <Track.Thumb>
+                                    <Thumb x:Name="TrackThumb" Style="{StaticResource SpectrumSliderThumb}" Foreground="{TemplateBinding Foreground}"/>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource ScrollRepeatButtonStyle}" Command="Slider.IncreaseLarge"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource ScrollRepeatButtonStyle}" Command="Slider.DecreaseLarge"/>
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+
+                            <TickBar Visibility="Collapsed" Grid.Row="2" x:Name="BottomTick" Height="4" SnapsToDevicePixels="True" Placement="Bottom" Fill="{TemplateBinding Foreground}" Grid.ColumnSpan="3" Margin="0,0,0,-4"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="TickPlacement" Value="TopLeft">
+                                <Setter Property="Visibility" Value="Visible" TargetName="TopTick"/>
+                            </Trigger>
+                            <Trigger Property="TickPlacement" Value="BottomRight">
+                                <Setter Property="Visibility" Value="Visible" TargetName="BottomTick"/>
+                            </Trigger>
+                            <Trigger Property="TickPlacement" Value="Both">
+                                <Setter Property="Visibility" Value="Visible" TargetName="TopTick"/>
+                                <Setter Property="Visibility" Value="Visible" TargetName="BottomTick"/>
+                            </Trigger>
+
+                            <!-- Use a rotation to create a Vertical Slider form the default Horizontal -->
+                            <Trigger Property="Orientation" Value="Vertical">
+                                <Setter Property="LayoutTransform" TargetName="GridRoot">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <!-- Track rotates itself based on orientation so need to force it back -->
+                                <Setter TargetName="PART_Track" Property="Orientation" Value="Horizontal"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Color Slider -->
+        <Style x:Key="SliderColorComponent" TargetType="{x:Type Slider}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Slider}">
+                        <Grid x:Name="GridRoot">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- TickBar shows the ticks for Slider -->
+                            <TickBar Visibility="Collapsed" x:Name="TopTick" Height="4" SnapsToDevicePixels="True" Placement="Top" Fill="{DynamicResource GlyphBrush}" Grid.ColumnSpan="3" Margin="0,0,0,10" Grid.RowSpan="2"/>
+
+                            <Border Grid.Row="1" Margin="0,5" x:Name="Border" Height="4" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" Grid.ColumnSpan="3"/>
+
+                            <Track x:Name="PART_Track" Grid.Row="1" Margin="-1,0,-1,0">
+                                <Track.Thumb>
+                                    <Thumb x:Name="TrackThumb" Style="{DynamicResource ColorSliderThumb}" Foreground="{TemplateBinding Foreground}"/>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource ScrollRepeatButtonStyle}" Command="Slider.IncreaseLarge"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource ScrollRepeatButtonStyle}" Command="Slider.DecreaseLarge"/>
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+
+                            <TickBar Visibility="Collapsed" Grid.Row="2" x:Name="BottomTick" Height="4" SnapsToDevicePixels="True" Placement="Bottom" Fill="{TemplateBinding Foreground}" Grid.ColumnSpan="3" Margin="0,0,0,-4"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="TickPlacement" Value="TopLeft">
+                                <Setter Property="Visibility" Value="Visible" TargetName="TopTick"/>
+                            </Trigger>
+                            <Trigger Property="TickPlacement" Value="BottomRight">
+                                <Setter Property="Visibility" Value="Visible" TargetName="BottomTick"/>
+                            </Trigger>
+                            <Trigger Property="TickPlacement" Value="Both">
+                                <Setter Property="Visibility" Value="Visible" TargetName="TopTick"/>
+                                <Setter Property="Visibility" Value="Visible" TargetName="BottomTick"/>
+                            </Trigger>
+
+                            <!-- Use a rotation to create a Vertical Slider form the default Horizontal -->
+                            <Trigger Property="Orientation" Value="Vertical">
+                                <Setter Property="LayoutTransform" TargetName="GridRoot">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <!-- Track rotates itself based on orientation so need to force it back -->
+                                <Setter TargetName="PART_Track" Property="Orientation" Value="Horizontal"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Alpha Slider -->
+        <Style x:Key="SliderAlphaComponent" TargetType="{x:Type Slider}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Slider}">
+                        <Grid x:Name="GridRoot">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- TickBar shows the ticks for Slider -->
+                            <TickBar Visibility="Collapsed" x:Name="TopTick" Height="4" SnapsToDevicePixels="True" Placement="Top" Fill="{DynamicResource GlyphBrush}" Grid.ColumnSpan="3" Margin="0,0,0,10" Grid.RowSpan="2"/>
+
+                            <!-- Underlying pattern for alpha component slider -->
+                            <Border Grid.Row="1" Margin="0,5" Height="4" CornerRadius="2" Background="{StaticResource CheckerBackground}"/>
+                            <Border Grid.Row="1" Margin="0,5" x:Name="Border" Height="4" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" Grid.ColumnSpan="3"/>
+
+                            <Track x:Name="PART_Track" Grid.Row="1" Margin="-1,0,-1,0">
+                                <Track.Thumb>
+                                    <Thumb Style="{DynamicResource ColorSliderThumb}" Foreground="{TemplateBinding Foreground}"/>
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource ScrollRepeatButtonStyle}" Command="Slider.IncreaseLarge"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Style="{StaticResource ScrollRepeatButtonStyle}" Command="Slider.DecreaseLarge"/>
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+
+                            <TickBar Visibility="Collapsed" Grid.Row="2" x:Name="BottomTick" Height="4" SnapsToDevicePixels="True" Placement="Bottom" Fill="{TemplateBinding Foreground}" Grid.ColumnSpan="3" Margin="0,0,0,-4"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="TickPlacement" Value="TopLeft">
+                                <Setter Property="Visibility" Value="Visible" TargetName="TopTick"/>
+                            </Trigger>
+                            <Trigger Property="TickPlacement" Value="BottomRight">
+                                <Setter Property="Visibility" Value="Visible" TargetName="BottomTick"/>
+                            </Trigger>
+                            <Trigger Property="TickPlacement" Value="Both">
+                                <Setter Property="Visibility" Value="Visible" TargetName="TopTick"/>
+                                <Setter Property="Visibility" Value="Visible" TargetName="BottomTick"/>
+                            </Trigger>
+
+                            <!-- Use a rotation to create a Vertical Slider form the default Horizontal -->
+                            <Trigger Property="Orientation" Value="Vertical">
+                                <Setter Property="LayoutTransform" TargetName="GridRoot">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <!-- Track rotates itself based on orientation so need to force it back -->
+                                <Setter TargetName="PART_Track" Property="Orientation" Value="Horizontal"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TextBox Style -->
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="AllowDrop" Value="true"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Grid>
+                            <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="2" CornerRadius="0">
+
+                                <!-- The implementation places the Content into the ScrollViewer. It must be named PART_ContentHost for the control to function -->
+                                <ScrollViewer Margin="0" x:Name="PART_ContentHost" Style="{DynamicResource SimpleScrollViewer}" Background="{TemplateBinding Background}"/>
+
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="{Binding TextBoxBorder, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ColorControlPanel}}}" TargetName="Border"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Triggers -->
+        <Style x:Key="GridTriggers" TargetType="Grid">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="OpacityMask" Value="#3F191919"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <!-- ********* LAYOUT ******** -->
-    <Grid x:Name="RootGrid" DockPanel.Dock="Top" Height="160" MinWidth="400" MinHeight="160">
+    <Grid x:Name="RootGrid" Height="160" MinWidth="400" MinHeight="160" Style="{StaticResource GridTriggers}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="{Binding Height, ElementName=RootGrid, Mode=OneWay}"/>
             <ColumnDefinition Width="30"/>
@@ -59,7 +370,10 @@
         <DockPanel x:Name="RGBAdock" Grid.Column="2" Margin="5,0,0,0">
             <DockPanel x:Name="dockRed" Height="25" LastChildFill="true" Margin="0,0,0,5" DockPanel.Dock="Top">
                 <Label x:Name="labelR" DockPanel.Dock="Left" Content="R" ScrollViewer.VerticalScrollBarVisibility="Disabled" Foreground="{Binding Foreground, ElementName=txtRvalue}" Width="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Padding="2" FontFamily="Cambria Math"/>
-                <TextBox x:Name="txtRvalue" DockPanel.Dock="Right" TextWrapping="Wrap" Text="255" Background="{Binding TextBoxBackground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ColorControlPanel}}}" Foreground="{Binding TextForeground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ColorControlPanel}}}" HorizontalContentAlignment="Center" FontFamily="Cambria Math" VerticalContentAlignment="Bottom" BorderBrush="{x:Null}" Margin="0" VerticalAlignment="Center" Padding="0,1,0,0" FontSize="16" Height="25" Width="38"/>
+                <TextBox x:Name="txtRvalue" DockPanel.Dock="Right" TextWrapping="Wrap" Text="255" 
+                         Background="{Binding TextBoxBackground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ColorControlPanel}}}" 
+                         Foreground="{Binding TextForeground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ColorControlPanel}}}"
+                         HorizontalContentAlignment="Center" FontFamily="Cambria Math" VerticalContentAlignment="Bottom" Margin="0" VerticalAlignment="Center" Padding="0,1,0,0" FontSize="16" Height="25" Width="38" BorderBrush="{x:Null}"/>
                 <Slider x:Name="sliderRed" Style="{StaticResource SliderColorComponent}" BorderBrush="{x:Null}" 
                         Maximum="255" SmallChange="1" Foreground="#FF570000" VerticalAlignment="Center" 
                         Margin="0,0,5,0" LargeChange="15" Value="25" Focusable="False" IsMoveToPointEnabled ="True">
@@ -116,16 +430,18 @@
             <DockPanel x:Name="dockSelectedColor" DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
                 <TextBox x:Name="txtColorCode" TextWrapping="Wrap" Text="#AAAAAAAA"
                              DockPanel.Dock="Right" VerticalAlignment="Bottom" Background="{Binding Background, ElementName=txtRvalue, Mode=TwoWay}" Foreground="{Binding Foreground, ElementName=txtRvalue}" FontSize="14" FontFamily="Lucida Console" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="95" Height="27" Padding="0"/>
-                <Grid Height="25" Background="{StaticResource CheckerBackground}" DockPanel.Dock="Right" Margin="10,0,2,0" VerticalAlignment="Center">
+                <Grid Height="25" Background="{StaticResource CheckerBackground}" DockPanel.Dock="Right" Margin="10,0,2,0" VerticalAlignment="Center" ClipToBounds="True">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Border x:Name="rectSelectedColor" Background="#FF3E6682" BorderBrush="Black" BorderThickness="0,1,1,1" ToolTip="Current color" Grid.Column="1" Margin="0,-1,-1,-1"/>
                     <Border x:Name="rectInitialColor" Background="#FF2B485C" Margin="-1" BorderBrush="Black" BorderThickness="1,1,0,1" ToolTip="Initial Color"/>
+                    <Rectangle Grid.ColumnSpan="2" Stroke="Black" StrokeThickness="1.2" />
                 </Grid>
             </DockPanel>
 
         </DockPanel>
     </Grid>
+    
 </UserControl>

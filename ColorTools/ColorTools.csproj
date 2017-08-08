@@ -61,10 +61,6 @@
     <Compile Include="ColorControlPanel.xaml.cs">
       <DependentUpon>ColorControlPanel.xaml</DependentUpon>
     </Compile>
-    <Page Include="ColorControlResources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
