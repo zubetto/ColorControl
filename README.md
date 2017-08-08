@@ -4,7 +4,7 @@ The following public members and Dependency Properties (DP) of the _ColorControl
   
 - _SelectedColor_ gets a currently picked color  
 - _ColorChanged_ event occurs when the _SelectedColor_ is changed  
-- DP _InitialColorBrush_ sets the initial color to which you can return by clicking the left rectangle  
+- DP _InitialColorBrush_ gets/sets the initial color to which you can return by clicking the left rectangle  
 - DP _SelectedColorBrush_ gets/sets the _SelectedColor_  
 - DP _TextBoxBackground_, _TextBoxBorder_, _TextForeground_ can be used for styling
   
