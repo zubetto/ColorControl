@@ -23,7 +23,7 @@ namespace ColorTools
     /// </summary>
     public partial class ColorControlPanel : UserControl
     {
-        private bool IsInitialised = false;
+        private bool ThumbsInitialised = false;
 
         private enum Sliders { A, R, G, B, H, SV, nil }
         private Sliders DrivingSlider = Sliders.nil;
@@ -101,7 +101,9 @@ namespace ColorTools
 
             AdjustThumbs(SelectedColorBrush.Color);
 
-            IsInitialised = true;
+            ThumbsInitialised = true;
+
+            RootGrid.Loaded -= IniThumbsBrushes;
         }
 
         // Algorithm taken from Wikipedia https://en.wikipedia.org/wiki/HSL_and_HSV
@@ -532,37 +534,46 @@ namespace ColorTools
             }
         }
 
+        private void removeSliderHandler()
+        {
+            switch (DrivingSlider)
+            {
+                case Sliders.A:
+                    sliderAlpha.ValueChanged -= AlphaThumbMove;
+                    break;
+
+                case Sliders.R:
+                    sliderRed.ValueChanged -= RedThumbMove;
+                    break;
+
+                case Sliders.G:
+                    sliderGreen.ValueChanged -= GreenThumbMove;
+                    break;
+
+                case Sliders.B:
+                    sliderBlue.ValueChanged -= BlueThumbMove;
+                    break;
+
+                case Sliders.H:
+                    sliderSpectrum.ValueChanged -= HueThumbMove;
+                    break;
+            }
+
+            DrivingSlider = Sliders.nil;
+        }
+
+        private void preMLBup_removeSliderHandler(object sender, MouseButtonEventArgs e)
+        {
+            Slider sourceSlider = e.Source as Slider;
+
+            if (sourceSlider != null) removeSliderHandler();
+        }
+
         private void LostMouseCapture_removeSliderHandler(object sender, MouseEventArgs e)
         {
             Slider sourceSlider = e.Source as Slider;
 
-            if (sourceSlider != null)
-            {
-                switch (DrivingSlider)
-                {
-                    case Sliders.A:
-                        sliderAlpha.ValueChanged -= AlphaThumbMove;
-                        break;
-
-                    case Sliders.R:
-                        sliderRed.ValueChanged -= RedThumbMove;
-                        break;
-
-                    case Sliders.G:
-                        sliderGreen.ValueChanged -= GreenThumbMove;
-                        break;
-
-                    case Sliders.B:
-                        sliderBlue.ValueChanged -= BlueThumbMove;
-                        break;
-
-                    case Sliders.H:
-                        sliderSpectrum.ValueChanged -= HueThumbMove;
-                        break;
-                }
-
-                DrivingSlider = Sliders.nil;
-            }
+            if (sourceSlider != null) removeSliderHandler();
         }
 
         private void MLBdownOverSVsquare(object sender, MouseButtonEventArgs e)
@@ -747,12 +758,13 @@ namespace ColorTools
             rectInitialColor.Background = iniColorBrush;
             rectSelectedColor.Background = outColorBrush;
 
-            Loaded += IniThumbsBrushes;
+            RootGrid.Loaded += IniThumbsBrushes;
 
             // Subscribe on events
             SaturationGradient.MouseLeftButtonDown += MLBdownOverSVsquare;
 
             RootGrid.PreviewMouseLeftButtonDown += preMLBdown_addSliderHandler;
+            RootGrid.PreviewMouseLeftButtonUp += preMLBup_removeSliderHandler;
             RootGrid.LostMouseCapture += LostMouseCapture_removeSliderHandler;
 
             RGBAdock.LostKeyboardFocus += LostKeyFocus_RGBApanel;
@@ -840,7 +852,7 @@ namespace ColorTools
                 ccp.rectSelectedColor.Background = ccp.outColorBrush;
             }
             
-            if (ccp.IsInitialised)
+            if (ccp.ThumbsInitialised)
             {
                 if (ccp.useHSV)
                 {
