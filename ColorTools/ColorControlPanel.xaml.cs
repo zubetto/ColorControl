@@ -65,45 +65,34 @@ namespace ColorTools
             AgradBrush = sliderAlpha.Background as LinearGradientBrush;
         }
 
-        /// <summary>
-        /// Loaded event handler
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void IniThumbsBrushes(object sender, RoutedEventArgs e)
+        private void IniThumbsBrushes()
         {
-            Thumb theThumb;
-            Ellipse theEllipse;
-            Rectangle theRectangle;
+            thumbRbrush = sliderRed.Foreground as SolidColorBrush;
+            thumbGbrush = sliderGreen.Foreground as SolidColorBrush;
+            thumbBbrush = sliderBlue.Foreground as SolidColorBrush;
 
-            // Red
-            theThumb = sliderRed.Template.FindName("TrackThumb", sliderRed) as Thumb;
-            theEllipse = theThumb.Template.FindName("Ellipse", theThumb) as Ellipse;
-            thumbRbrush = theEllipse.Fill as SolidColorBrush;
-            
-            // Green
-            theThumb = sliderGreen.Template.FindName("TrackThumb", sliderGreen) as Thumb;
-            theEllipse = theThumb.Template.FindName("Ellipse", theThumb) as Ellipse;
-            thumbGbrush = theEllipse.Fill as SolidColorBrush;
-
-            // Blue
-            theThumb = sliderBlue.Template.FindName("TrackThumb", sliderBlue) as Thumb;
-            theEllipse = theThumb.Template.FindName("Ellipse", theThumb) as Ellipse;
-            thumbBbrush = theEllipse.Fill as SolidColorBrush;
-
-            // Hue
-            theThumb = sliderSpectrum.Template.FindName("TrackThumb", sliderSpectrum) as Thumb;
-            theRectangle = theThumb.Template.FindName("Ellipse", theThumb) as Rectangle;
-            thumbHbrush = theRectangle.Fill as SolidColorBrush;
-
-            // Output color
+            thumbHbrush = sliderSpectrum.Foreground as SolidColorBrush;
             thumbSV.Fill = thumbSVbrush;
-
-            AdjustThumbs(SelectedColorBrush.Color);
-
+            
             ThumbsInitialised = true;
+        }
+        
+        private void IniThumbs(object sender, RoutedEventArgs e)
+        {
+            RootGrid.Loaded -= IniThumbs;
 
-            RootGrid.Loaded -= IniThumbsBrushes;
+            if (!RootGrid.IsVisible) RootGrid.LayoutUpdated += IniThumbsDeferred;
+            else AdjustThumbs(SelectedColorBrush.Color);
+        }
+
+        private void IniThumbsDeferred(object sender, EventArgs e)
+        {
+            if (RootGrid.ActualHeight != 0 && RootGrid.ActualWidth != 0)
+            {
+                RootGrid.LayoutUpdated -= IniThumbsDeferred;
+
+                AdjustThumbs(SelectedColorBrush.Color);
+            }
         }
 
         // Algorithm taken from Wikipedia https://en.wikipedia.org/wiki/HSL_and_HSV
@@ -387,13 +376,11 @@ namespace ColorTools
             if (DrivingSlider != Sliders.H) sliderSpectrum.Value = outColorH;
 
             // SV thumb
-            outColor.A = 255;
-            thumbSVbrush.Color = outColor;
-            outColor.A = A;
+            thumbSVbrush.Color = theColor;
 
             // Saturation gradient
             SaturationGradBrush.GradientStops[1].Color = thumbHColor;
-
+            
             // Saturation and value to canvas coords
             Canvas.SetLeft(thumbSV, outColorS * SaturationGradient.ActualWidth - 0.5 * thumbSV.ActualWidth);
             Canvas.SetTop(thumbSV, (1 - outColorV) * SaturationGradient.ActualHeight - 0.5 * thumbSV.ActualHeight);
@@ -753,12 +740,14 @@ namespace ColorTools
         public ColorControlPanel()
         {
             InitializeComponent();
+
             IniGradientBrushes();
-            
+            IniThumbsBrushes();
+
             rectInitialColor.Background = iniColorBrush;
             rectSelectedColor.Background = outColorBrush;
 
-            RootGrid.Loaded += IniThumbsBrushes;
+            RootGrid.Loaded += IniThumbs;
 
             // Subscribe on events
             SaturationGradient.MouseLeftButtonDown += MLBdownOverSVsquare;
@@ -808,6 +797,15 @@ namespace ColorTools
             set { SetValue(TextForegroundProperty, value); }
         } // Brush TextForeground ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+        public static readonly DependencyProperty DockAlphaVisibilityProperty = DependencyProperty.Register("DockAlphaVisibility", typeof(Visibility), typeof(ColorControlPanel),
+                                                            new FrameworkPropertyMetadata(Visibility.Visible, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public Visibility DockAlphaVisibility
+        {
+            get { return (Visibility)GetValue(DockAlphaVisibilityProperty); }
+            set { SetValue(DockAlphaVisibilityProperty, value); }
+        } // DockAlphaVisibility ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
         public static readonly DependencyProperty InitialColorBrushProperty = DependencyProperty.Register("InitialColorBrush", typeof(SolidColorBrush), typeof(ColorControlPanel),

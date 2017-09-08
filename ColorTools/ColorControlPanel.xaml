@@ -182,7 +182,7 @@
                             </Grid.RowDefinitions>
 
                             <!-- TickBar shows the ticks for Slider -->
-                            <TickBar Visibility="Collapsed" x:Name="TopTick" Height="4" SnapsToDevicePixels="True" Placement="Top" Fill="{DynamicResource GlyphBrush}" Grid.ColumnSpan="3" Margin="0,0,0,10" Grid.RowSpan="2"/>
+                            <TickBar Visibility="Collapsed" x:Name="TopTick" Height="4" SnapsToDevicePixels="True" Placement="Top" Fill="#ff5a5a5a" Grid.ColumnSpan="3" Margin="0,0,0,10" Grid.RowSpan="2"/>
 
                             <Border Grid.Row="1" Margin="0,5" x:Name="Border" Height="4" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" Grid.ColumnSpan="3"/>
 
@@ -413,7 +413,7 @@
                     </Slider.Background>
                 </Slider>
             </DockPanel>
-            <DockPanel x:Name="dockAlpha" Height="25" LastChildFill="true" Margin="0,0,0,5" DockPanel.Dock="Top">
+            <DockPanel x:Name="dockAlpha" Height="25" LastChildFill="true" Margin="0,0,0,5" DockPanel.Dock="Top" Visibility="{Binding DockAlphaVisibility, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ColorControlPanel}}}">
                 <Label x:Name="labelA" DockPanel.Dock="Left" Content="A" ScrollViewer.VerticalScrollBarVisibility="Disabled" Foreground="{Binding Foreground, ElementName=txtRvalue}" Width="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Padding="2" FontFamily="Cambria Math"/>
                 <TextBox x:Name="txtAvalue" DockPanel.Dock="Right" TextWrapping="Wrap" Text="255" Background="{Binding Background, ElementName=txtRvalue}" Foreground="{Binding Foreground, ElementName=txtRvalue}" HorizontalContentAlignment="Center" FontFamily="Cambria Math" VerticalContentAlignment="Bottom" BorderBrush="{x:Null}" Margin="0" VerticalAlignment="Center" Padding="0,1,0,0" FontSize="16" Height="25" Width="38"/>
                 <Slider x:Name="sliderAlpha" Style="{DynamicResource SliderAlphaComponent}" BorderBrush="{x:Null}" 
