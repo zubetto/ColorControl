@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Text.RegularExpressions;
 
 namespace ColorTools
 {
@@ -833,6 +834,18 @@ namespace ColorTools
         public static readonly DependencyProperty SelectedColorBrushProperty = DependencyProperty.Register("SelectedColorBrush", typeof(SolidColorBrush), typeof(ColorControlPanel),
                                                             new FrameworkPropertyMetadata(new SolidColorBrush(Color.FromRgb(85, 85, 85)),
                                                                                           new PropertyChangedCallback(SelectedColorChanged)));
+
+        private void TextBoxPreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void ColorCode_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("^([A-Fa-f0-9]{2}){8,9}$");
+            e.Handled = regex.IsMatch(e.Text);
+        }
 
         public SolidColorBrush SelectedColorBrush
         {

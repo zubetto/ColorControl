@@ -373,7 +373,7 @@
                 <TextBox x:Name="txtRvalue" DockPanel.Dock="Right" TextWrapping="Wrap" Text="255" 
                          Background="{Binding TextBoxBackground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ColorControlPanel}}}" 
                          Foreground="{Binding TextForeground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ColorControlPanel}}}"
-                         HorizontalContentAlignment="Center" FontFamily="Cambria Math" VerticalContentAlignment="Bottom" Margin="0" VerticalAlignment="Center" Padding="0,1,0,0" FontSize="16" Height="25" Width="38" BorderBrush="{x:Null}"/>
+                         HorizontalContentAlignment="Center" FontFamily="Cambria Math" VerticalContentAlignment="Bottom" Margin="0" VerticalAlignment="Center" Padding="0,1,0,0" FontSize="16" Height="25" Width="38" BorderBrush="{x:Null}" PreviewTextInput="TextBoxPreviewTextInput"/>
                 <Slider x:Name="sliderRed" Style="{StaticResource SliderColorComponent}" BorderBrush="{x:Null}" 
                         Maximum="255" SmallChange="1" Foreground="#FF570000" VerticalAlignment="Center" 
                         Margin="0,0,5,0" LargeChange="15" Value="25" Focusable="False" IsMoveToPointEnabled ="True">
@@ -387,7 +387,7 @@
             </DockPanel>
             <DockPanel x:Name="dockGreen" Height="25" LastChildFill="true" Margin="0,0,0,5" DockPanel.Dock="Top">
                 <Label x:Name="labelG" DockPanel.Dock="Left" Content="G" ScrollViewer.VerticalScrollBarVisibility="Disabled" Foreground="{Binding Foreground, ElementName=txtRvalue}" Width="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Padding="2" FontFamily="Cambria Math"/>
-                <TextBox x:Name="txtGvalue" DockPanel.Dock="Right" TextWrapping="Wrap" Text="255" Background="{Binding Background, ElementName=txtRvalue, Mode=TwoWay}" Foreground="{Binding Foreground, ElementName=txtRvalue}" HorizontalContentAlignment="Center" FontFamily="Cambria Math" VerticalContentAlignment="Bottom" BorderBrush="{x:Null}" Margin="0" VerticalAlignment="Center" Padding="0,1,0,0" FontSize="16" Height="25" Width="38"/>
+                <TextBox x:Name="txtGvalue" DockPanel.Dock="Right" TextWrapping="Wrap" Text="255" Background="{Binding Background, ElementName=txtRvalue, Mode=TwoWay}" Foreground="{Binding Foreground, ElementName=txtRvalue}" HorizontalContentAlignment="Center" FontFamily="Cambria Math" VerticalContentAlignment="Bottom" BorderBrush="{x:Null}" Margin="0" VerticalAlignment="Center" Padding="0,1,0,0" FontSize="16" Height="25" Width="38" PreviewTextInput="TextBoxPreviewTextInput"/>
                 <Slider x:Name="sliderGreen" Style="{StaticResource SliderColorComponent}" BorderBrush="{x:Null}" 
                         Value="25" Maximum="255" SmallChange="1" Foreground="#FF003D00" 
                         VerticalAlignment="Center" Margin="0,0,5,0" LargeChange="15" Focusable="False" IsMoveToPointEnabled ="True">
@@ -401,7 +401,7 @@
             </DockPanel>
             <DockPanel x:Name="dockBlue" Height="25" LastChildFill="true" Margin="0,0,0,5" DockPanel.Dock="Top">
                 <Label x:Name="labelB" DockPanel.Dock="Left" Content="B" ScrollViewer.VerticalScrollBarVisibility="Disabled" Foreground="{Binding Foreground, ElementName=txtRvalue, Mode=TwoWay}" Width="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Padding="2" FontFamily="Cambria Math"/>
-                <TextBox x:Name="txtBvalue" DockPanel.Dock="Right" TextWrapping="Wrap" Text="255" Background="{Binding Background, ElementName=txtRvalue}" Foreground="{Binding Foreground, ElementName=txtRvalue}" HorizontalContentAlignment="Center" FontFamily="Cambria Math" VerticalContentAlignment="Bottom" BorderBrush="{x:Null}" Margin="0" VerticalAlignment="Center" Padding="0,1,0,0" FontSize="16" Height="25" Width="38"/>
+                <TextBox x:Name="txtBvalue" DockPanel.Dock="Right" TextWrapping="Wrap" Text="255" Background="{Binding Background, ElementName=txtRvalue}" Foreground="{Binding Foreground, ElementName=txtRvalue}" HorizontalContentAlignment="Center" FontFamily="Cambria Math" VerticalContentAlignment="Bottom" BorderBrush="{x:Null}" Margin="0" VerticalAlignment="Center" Padding="0,1,0,0" FontSize="16" Height="25" Width="38" PreviewTextInput="TextBoxPreviewTextInput"/>
                 <Slider x:Name="sliderBlue" Style="{StaticResource SliderColorComponent}" BorderBrush="{x:Null}" 
                         Value="25" Maximum="255" SmallChange="1" Foreground="#FF000056" VerticalAlignment="Center"
                         Margin="0,0,5,0" LargeChange="15" Focusable="False" IsMoveToPointEnabled ="True">
@@ -415,7 +415,7 @@
             </DockPanel>
             <DockPanel x:Name="dockAlpha" Height="25" LastChildFill="true" Margin="0,0,0,5" DockPanel.Dock="Top" Visibility="{Binding DockAlphaVisibility, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ColorControlPanel}}}">
                 <Label x:Name="labelA" DockPanel.Dock="Left" Content="A" ScrollViewer.VerticalScrollBarVisibility="Disabled" Foreground="{Binding Foreground, ElementName=txtRvalue}" Width="25" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" Padding="2" FontFamily="Cambria Math"/>
-                <TextBox x:Name="txtAvalue" DockPanel.Dock="Right" TextWrapping="Wrap" Text="255" Background="{Binding Background, ElementName=txtRvalue}" Foreground="{Binding Foreground, ElementName=txtRvalue}" HorizontalContentAlignment="Center" FontFamily="Cambria Math" VerticalContentAlignment="Bottom" BorderBrush="{x:Null}" Margin="0" VerticalAlignment="Center" Padding="0,1,0,0" FontSize="16" Height="25" Width="38"/>
+                <TextBox x:Name="txtAvalue" DockPanel.Dock="Right" TextWrapping="Wrap" Text="255" Background="{Binding Background, ElementName=txtRvalue}" Foreground="{Binding Foreground, ElementName=txtRvalue}" HorizontalContentAlignment="Center" FontFamily="Cambria Math" VerticalContentAlignment="Bottom" BorderBrush="{x:Null}" Margin="0" VerticalAlignment="Center" Padding="0,1,0,0" FontSize="16" Height="25" Width="38" PreviewTextInput="TextBoxPreviewTextInput"/>
                 <Slider x:Name="sliderAlpha" Style="{DynamicResource SliderAlphaComponent}" BorderBrush="{x:Null}" 
                         Value="25" Maximum="255" SmallChange="1" Foreground="#FF979797" 
                         VerticalAlignment="Center" Margin="0,0,5,0" LargeChange="15" Focusable="False" IsMoveToPointEnabled ="True">
@@ -429,7 +429,7 @@
             </DockPanel>
             <DockPanel x:Name="dockSelectedColor" DockPanel.Dock="Bottom" VerticalAlignment="Bottom">
                 <TextBox x:Name="txtColorCode" TextWrapping="Wrap" Text="#AAAAAAAA"
-                             DockPanel.Dock="Right" VerticalAlignment="Bottom" Background="{Binding Background, ElementName=txtRvalue, Mode=TwoWay}" Foreground="{Binding Foreground, ElementName=txtRvalue}" FontSize="14" FontFamily="Lucida Console" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="95" Height="27" Padding="0"/>
+                             DockPanel.Dock="Right" VerticalAlignment="Bottom" Background="{Binding Background, ElementName=txtRvalue, Mode=TwoWay}" Foreground="{Binding Foreground, ElementName=txtRvalue}" FontSize="14" FontFamily="Lucida Console" BorderBrush="{x:Null}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Width="95" Height="27" Padding="0" PreviewTextInput="ColorCode_PreviewTextInput"/>
                 <Grid Height="25" Background="{StaticResource CheckerBackground}" DockPanel.Dock="Right" Margin="10,0,2,0" VerticalAlignment="Center" ClipToBounds="True">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
